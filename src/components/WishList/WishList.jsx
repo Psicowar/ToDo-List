@@ -13,11 +13,11 @@ const WishList = ({ handleSetOverWrite }) => {
 
 
 
-	// useEffect(() => {
-	// 		getUsersTodos().then(data => {
-	// 			setWishList(data)
-	// 		})
-	// }, )
+	useEffect(() => {
+			getUsersTodos().then(data => {
+				setWishList(data)
+			})
+	}, )
 
 
 	if (wishList && wishList.length === 0) {
