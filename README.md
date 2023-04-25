@@ -30,6 +30,14 @@ npm start
 
 
 ---
+## Requierements:
+To run the project you need to create a .env.development file
+configuring:
+
+PORT="For example 4000 or any free port you have"
+
+MONGODB_URI="Your BD conecction"
+
 
 ### Project Description
 
