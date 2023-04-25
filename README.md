@@ -2,7 +2,7 @@
 
 ### Clone the repository:
 
-https://github.com/Psicowar/ToDo-List-Backend.git
+https://github.com/Psicowar/ToDo-List
 
 ## Install required dependencies:
 
