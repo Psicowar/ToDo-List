@@ -33,9 +33,13 @@
   }
 
   .dropdown-toggle:hover {
-    transform: scale(1.1);
     background-color: #212529;
-    
+    color: #6c757d;
+  }
+
+  .dropdown-toggle:active {
+    background-color: #212529;
+    color: #6c757d;
   }
 
   .home__btn {
@@ -54,6 +58,10 @@
     color: #212529;
   }
 
+  .data_container {
+    height: 100px;
+  }
 
- 
-
+.img_style {
+  height: 50px;
+}

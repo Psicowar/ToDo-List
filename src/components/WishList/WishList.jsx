@@ -1,36 +1,26 @@
 import Wish from "../Wish/Wish";
 import emptyList from "../../assets/imgs/diary.ilustration.svg"
 import "./WishList.css"
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useWishListContext } from "../../context/WishListProvider.jsx";
-
-const WishList = ({ status, handleSetDeleteWish, handleSetOverWrite, handleEditModal }) => {
-
-	const { wishList } = useWishListContext()
-
-	const [filterList, setFilterList] = useState(undefined)
+import useTodo from "../../hooks/useTodo";
 
 
-	useEffect(() => {
-		const arrWish = []
-		wishList.forEach(wish => {
-			if (status === 'all') {
-				arrWish.push(wish)
-				return;
-			} else {
-				if (wish.status === status) {
-					arrWish.push(wish)
-				}
-			}
-		})
-		setFilterList(arrWish)
-
-	}, [wishList, status])
+const WishList = ({ handleSetOverWrite }) => {
+	const { getUsersTodos } = useTodo()
+	const { wishList, setWishList } = useWishListContext()
 
 
 
 
-	if (filterList && filterList.length === 0) {
+	// useEffect(() => {
+	// 		getUsersTodos().then(data => {
+	// 			setWishList(data)
+	// 		})
+	// }, )
+
+
+	if (wishList && wishList.length === 0) {
 		return (
 			<div className="d-flex justify-content-center align-items-center h-100">
 				<img className="list__img" src={emptyList} alt="Diary ilustration" />
@@ -40,15 +30,12 @@ const WishList = ({ status, handleSetDeleteWish, handleSetOverWrite, handleEditM
 		return (
 			<ul className="d-flex flex-column overflow-hidden p-0" >
 				{
-					filterList && filterList.map(wish => {
+					wishList && wishList.map(wish => {
 						return (
-							<li key={wish.id} className='m-0'>
+							<li key={wish._id} className='m-0'>
 								<Wish
-									key={wish.id}
 									wish={wish}
-									handleSetDeleteWish={handleSetDeleteWish}
 									handleSetOverWrite={handleSetOverWrite}
-									handleEditModal={handleEditModal}
 								/>
 							</li>
 						)

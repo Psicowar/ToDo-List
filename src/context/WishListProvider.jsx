@@ -1,14 +1,16 @@
-import { useContext, createContext } from "react";
+import { useContext, createContext, useEffect } from "react";
 import { useState } from "react";
+import useTodo from "../hooks/useTodo"
 
 export const WishListContext = createContext(null)
 
 const WishListProvider = ({ children }) => {
-	const getDataLocalStorage = localStorage.getItem('WishList')
-	const [wishList, setWishList] = useState(
-		getDataLocalStorage ? JSON.parse(getDataLocalStorage) : []
-	)
 
+	const [wishList, setWishList] = useState([])
+
+
+	
+	
 	return (
 		<WishListContext.Provider value={{ wishList, setWishList }}>
 			{children}

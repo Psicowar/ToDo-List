@@ -1,59 +1,25 @@
 import WishList from "../WishList/WishList.jsx";
 import CountAllWishes from "../CountAllWishes/CountAllWishes.jsx";
-
 import { ListButton } from "../ButtonComponent/ButtonComponent.jsx";
-
+import useTodo from "../../hooks/useTodo.jsx"
 import { NavLink } from "react-router-dom";
-import { v4 as uuidv4 } from 'uuid';
-import { useEffect, useState } from "react";
 import { useWishListContext } from "../../context/WishListProvider.jsx";
 import "./WishContainer.css"
 import Swal from "sweetalert2";
-
+import { useForm } from "react-hook-form";
 
 
 const WishContainer = ({ status }) => {
 	const { wishList, setWishList } = useWishListContext()
-	const [text, setText] = useState('')
+	const { addTodo, getUsersTodos, deleteALlTodos } = useTodo();
+	const { register, handleSubmit, reset } = useForm()
 
-
-	// const addWish = (text) => {
-	// 	const newWish = {
-	// 		id: uuidv4(),
-	// 		text,
-	// 		done: false,
-	// 		isEditing: false,
-	// 		status: "active"
-	// 	}
-	// 	const handleNewWish = [newWish, ...wishes];
-	// 	setWishes(handleNewWish)
-	// 	setWishes('')
-	// }
-
-
-
-	useEffect(() => {
-		localStorage.setItem('WishList', JSON.stringify(wishList))
-	}, [wishList])
-
-	
-	const handleSetDeleteWish = (id) => {
-		const updatedWishList = wishList.filter(item => item.id !== id)
-		setWishList(updatedWishList)
-	}
-
-
-
-	const handleWish = (e) => {
-		e.preventDefault();
-		let newWish = {
-			id: uuidv4(),
-			text: text,
-			done: false,
-			isEditing: false,
+	const onSubmit = async (data) => {
+		const newTask = {
+			text: data.text,
 			status: "active",
 		}
-		if (text === '') {
+		if (newTask.text === '') {
 			Swal.fire({
 				icon: 'error',
 				title: "You can't add a blank task",
@@ -63,15 +29,14 @@ const WishContainer = ({ status }) => {
 			});
 			return;
 		} else {
-			setWishList([...wishList, newWish])
-			const localStorageWish = [...wishList, newWish]
-			localStorage.setItem('WishList', JSON.stringify(localStorageWish))
-			setText('')
+			await addTodo(data.text)
+			const userTodos = await getUsersTodos()
+			setWishList(userTodos)
+			reset()
 		}
 	}
 
-
-	const handleSetDeleteAll = () => {
+	const handleSetDeleteAll = async () => {
 		if (wishList.length > 0) {
 			Swal.fire({
 				title: 'Are you sure you want to delete everything??',
@@ -84,7 +49,7 @@ const WishContainer = ({ status }) => {
 				background: '#6c757d'
 			}).then((result) => {
 				if (result.isConfirmed) {
-					localStorage.removeItem('WishList')
+					deleteALlTodos()
 					setWishList([])
 					Swal.fire({
 						title: 'Saved!',
@@ -113,39 +78,6 @@ const WishContainer = ({ status }) => {
 	}
 
 
-	const handleEditModal = async (id) => {
-		const currentWish = wishList.find((item) => item.id === id)
-		const { value } = await Swal.fire({
-			title: 'Edit task',
-			input: 'text',
-			inputValue: currentWish.text,
-			background: '#6c757d',
-			color: '#212529',
-			confirmButtonColor: '#212529',
-		})
-		if (value) {
-			setText(currentWish.text)
-			const updatedWishList = wishList.map(wish => {
-				if (wish.id === id) {
-					wish.text = value
-				};
-				return wish
-			})
-			setWishList(updatedWishList)
-		} else {
-			Swal.fire({
-				icon: 'error',
-				title: "You can't add a blank task",
-				background: '#6c757d',
-				color: '#212529',
-				confirmButtonColor: '#212529',
-			});
-			
-		}
-		setText('')
-	}
-
-
 
 	return (
 		<div className="min-vh-100 d-flex bg-dark">
@@ -154,41 +86,24 @@ const WishContainer = ({ status }) => {
 				<div className="d-flex justify-content-between p-2">
 					<CountAllWishes />
 					<div className="d-flex align-items-center justify-content-between ">
-						<div className="dropdown">
-							<button className=" text-secondary btn border border-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-								Filters
-							</button>
-							<ul className="dropdown-menu dropdown-menu-filters bg-dark border border-secondary">
-								<NavLink to="/wishes/all" ><ListButton liNames={'All'} /></NavLink>
-								<NavLink to="/wishes/active"><ListButton liNames={'Active'} /></NavLink>
-								<NavLink to="/wishes/completed"><ListButton liNames={'Completed'} /></NavLink>
-							</ul>
-						</div>
-						<button className='delete__completed text-secondary m-2 btn border border-secondary' onClick={handleSetDeleteAll}>
+						<button className='delete__completed text-secondary m-2 btn border border-secondary' onClick={() => handleSetDeleteAll()}>
 							Delete Completed
 						</button>
 					</div>
 				</div>
 				<div className="m-3  border-secondary">
-					<form onSubmit={(e) => handleWish(e)}>
+					<form onSubmit={handleSubmit(onSubmit)}>
 						<input
 							type="text"
 							className="input__wish bg-secondary text-dark w-100 p-1 "
 							placeholder="Add new to-do"
-							name={text}
-							value={text}
-							onChange={(e) => setText(e.target.value)}
+							{...register("text")}
 						/>
 					</form>
 				</div>
-				<WishList
-					status={status}
-					handleSetDeleteWish={handleSetDeleteWish}
-					handleEditModal={handleEditModal}
-				/>
+				<WishList status={status} />
 			</div>
 		</div>
-
 	)
 };
 

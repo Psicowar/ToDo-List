@@ -1,26 +1,45 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import "./NavBarComponent.css"
+import { useAuth0 } from "@auth0/auth0-react";
+import { useEffect, useState } from 'react';
+
 
 const NavBarComponent = () => {
+	const { user, logout, isAuthenticated } = useAuth0();
+	const [showPath, setShowPath] = useState("All")
+	const { pathname } = useLocation()
+
+	const handleLogout = () => {
+		logout({ logoutParams: { returnTo: window.location.origin } })
+	}
+
+
+	useEffect(() => {
+		if (pathname.includes("active")) {
+			setShowPath("Active")
+		} else if (pathname.includes("completed")) {
+			setShowPath("Completed")
+		}
+		else {
+			setShowPath("All")
+		}
+	}, [pathname])
+
+
+
 	return (
-		<nav className="navbar navbar-expand-lg bg-body-tertiary p-0">
+		isAuthenticated &&
+		<nav className="navbar p-0 d-flex justify-content-center sticky-top">
 			<div className="container-fluid bg-secondary" >
-				<button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-					<span className="navbar-toggler-icon"></span>
-				</button>
-				<div className="collapse navbar-collapse" id="navbarSupportedContent">
-					<ul className="navbar-nav me-auto mb-2 mb-lg-0 ">
-						<li className="nav-item dropdown d-flex justify-content-center align-items-center p-2">
-							<p className="nav-link dropdown-toggle m-0" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-								Wishes List
-							</p>
-							<ul className="dropdown-menu bg-secondary">
-								<NavLink to="/wishes/all"><li className="dropdown-item m-0">All</li></NavLink>
-								<NavLink to="/wishes/active"><li className="dropdown-item m-0">Active</li></NavLink>
-								<NavLink to="/wishes/completed"><li className="dropdown-item m-0">Completed</li></NavLink>
-							</ul>
-						</li>
-					</ul>
+				<img src={user.picture} alt="Name of logged user" className='rounded img_style' />
+				<div className='d-flex flex-row justify-content-center align-items-center gap-4 data_container'>
+
+					<span className='fs-3'>Welcome {user.name}😀!</span>
+				</div>
+				<div className=' d-flex justify-content-end'>
+					<button className='btn btn-dark text-secondary hover:text-dark ' onClick={handleLogout}>
+						Log Out
+					</button>
 				</div>
 			</div>
 		</nav>
